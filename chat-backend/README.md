@@ -20,4 +20,9 @@ sequelize seed:create --name users
 sequelize db:seed:all
 // delete all
 sequelize db:seed:undo
+// create chat
+sequelize model:create --name Chat --attributes type:string
+sequelize model:create --name ChatUser --attributes chatId:integer,userId:integer
+sequelize model:create --name Message --attributes type:string,message:text,chatId:integer,formUserId:integer
+sequelize db:migrate
 ```
