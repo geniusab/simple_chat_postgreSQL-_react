@@ -23,6 +23,9 @@ sequelize db:seed:undo
 // create chat
 sequelize model:create --name Chat --attributes type:string
 sequelize model:create --name ChatUser --attributes chatId:integer,userId:integer
-sequelize model:create --name Message --attributes type:string,message:text,chatId:integer,formUserId:integer
+sequelize model:create --name Message --attributes type:string,message:text,chatId:integer,fromUserId:integer
 sequelize db:migrate
+
+//create dummy data chat
+ sequelize seed:create --name chats
 ```

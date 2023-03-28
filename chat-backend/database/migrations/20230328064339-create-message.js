@@ -19,16 +19,16 @@ module.exports = {
       chatId: {
         type: Sequelize.INTEGER,
         allowNull: false,
-        reference: {
+        references: {
           model: "Chats",
           key: "id",
         },
         onDelete: "CASCADE",
       },
-      formUserId: {
+      fromUserId: {
         type: Sequelize.INTEGER,
         allowNull: false,
-        reference: {
+        references: {
           model: "Users",
           key: "id",
         },
