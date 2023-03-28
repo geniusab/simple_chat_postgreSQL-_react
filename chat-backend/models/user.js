@@ -1,6 +1,8 @@
 "use strict";
 
 const { Model } = require("sequelize");
+const config = require("../config/app");
+
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
     /**
@@ -19,7 +21,22 @@ module.exports = (sequelize, DataTypes) => {
       email: DataTypes.STRING,
       password: DataTypes.STRING,
       gender: DataTypes.STRING,
-      avatar: DataTypes.STRING,
+      avatar: {
+        type: DataTypes.STRING,
+        get() {
+          const avatar = this.getDataValue("avatar");
+          const url = `${config.appUrl}:${config.appPort}`;
+
+          console.log(`avatar ${this.getDataValue("gender")}`);
+
+          if (!avatar) {
+            return `${url}/${this.getDataValue("gender")}.svg`;
+          }
+
+          const id = this.getDataValue("id");
+          return `${url}/user/${id}/${avatar}`;
+        },
+      },
     },
     {
       sequelize,
