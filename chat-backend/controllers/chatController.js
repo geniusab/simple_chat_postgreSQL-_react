@@ -177,22 +177,22 @@ exports.messages = async (req, res) => {
   return res.json({ data: { ...result } });
 };
 
-// exports.deleteChat = async (req, res) => {
-//   try {
-//     await Chat.destroy({
-//       where: {
-//         id: req.params.id,
-//       },
-//     });
+exports.deleteChat = async (req, res) => {
+  try {
+    await Chat.destroy({
+      where: {
+        id: req.params.id,
+      },
+    });
 
-//     return res.json({
-//       status: "success",
-//       messages: "Chat destroyed successfully",
-//     });
-//   } catch (err) {
-//     res.end(JSON.stringify({ status: "error", message: e.message }));
-//   }
-// };
+    return res.json({
+      status: "success",
+      messages: "Chat destroyed successfully",
+    });
+  } catch (err) {
+    res.end(JSON.stringify({ status: "error", message: e.message }));
+  }
+};
 
 exports.sendMessage = async (req, res) => {
   const { sendMessage, chatId } = req.body;
