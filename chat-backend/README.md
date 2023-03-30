@@ -1,14 +1,21 @@
 #sequelize
 
-Add .env
+Create database than you you need add .env and after that run the migrations
+
+## .env
+
+```
 API_KEY=your_api_key
 APP_URL=your_app_url
 APP_PORT=3001
 
 DB_HOST=localhost
-DB_USER=your_db_user  
+DB_USER=your_db_user
 DB_PASSWORD=your_db_password
 DB_DATABASE=your_db_database
+```
+
+## Database migration
 
 ```
 <!-- create model -->

@@ -1,6 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 import counterReducer from "../features/counter/counterSlice";
 import userReducer from "../features/user/userSlice";
+import chatReducer from "../features/chat/chatSlice";
 
 const authMiddleware = (store) => (next) => (action) => {
   const result = next(action);
@@ -25,6 +26,7 @@ export const store = configureStore({
   reducer: {
     counter: counterReducer,
     auth: userReducer,
+    chat: chatReducer,
   },
 
   middleware: (getDefaultMiddleware) =>

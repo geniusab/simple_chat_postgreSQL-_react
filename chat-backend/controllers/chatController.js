@@ -1,12 +1,10 @@
-const sequelize = require("sequelize");
-
+const { Op } = require("sequelize");
 const config = require("../config/app");
 const User = require("../models").User;
 const Chat = require("../models").Chat;
 const ChatUser = require("../models").ChatUser;
 const Message = require("../models").Message;
-
-const { Op } = require("sequelize");
+const { sequelize } = require("../models");
 
 exports.chat = async (req, res) => {
   const user = await User.findOne({
@@ -27,6 +25,11 @@ exports.chat = async (req, res) => {
           },
           {
             model: Message,
+            include: [
+              {
+                model: User,
+              },
+            ],
             limit: 20,
             order: [["id", "DESC"]],
           },
@@ -36,12 +39,6 @@ exports.chat = async (req, res) => {
   });
 
   return res.send(user.Chats);
-
-  // try {
-
-  // } catch (e) {
-  //   res.end(JSON.stringify({ status: "error", message: e.message }));
-  // }
 };
 
 exports.create = async (req, res) => {
@@ -50,7 +47,7 @@ exports.create = async (req, res) => {
   const t = await sequelize.transaction();
 
   try {
-    const user = await User.findOut({
+    const user = await User.findOne({
       where: {
         id: req.user.id,
       },
@@ -97,28 +94,47 @@ exports.create = async (req, res) => {
 
     await t.commit();
 
+    // const chatNew = await Chat.findOne({
+    //   where: {
+    //     id: chat.id,
+    //   },
+    //   include: [
+    //     {
+    //       model: Chat,
+    //       include: [
+    //         {
+    //           model: User,
+    //           where: {
+    //             [Op.not]: {
+    //               id: req.user.id,
+    //             },
+    //           },
+    //         },
+    //         {
+    //           model: Message,
+    //           limit: 20,
+    //           order: [["id", "DESC"]],
+    //         },
+    //       ],
+    //     },
+    //   ],
+    // });
+
     const chatNew = await Chat.findOne({
       where: {
         id: chat.id,
       },
       include: [
         {
-          model: Chat,
-          include: [
-            {
-              model: User,
-              where: {
-                [Op.not]: {
-                  id: req.user.id,
-                },
-              },
+          model: User,
+          where: {
+            [Op.not]: {
+              id: req.user.id,
             },
-            {
-              model: Message,
-              limit: 20,
-              order: [["id", "DESC"]],
-            },
-          ],
+          },
+        },
+        {
+          model: Message,
         },
       ],
     });
@@ -126,7 +142,6 @@ exports.create = async (req, res) => {
     return res.send(chatNew);
   } catch (e) {
     await t.rollback();
-
     res.end(JSON.stringify({ status: "error", message: e.message }));
   }
 };
@@ -162,19 +177,38 @@ exports.messages = async (req, res) => {
   return res.json({ data: { ...result } });
 };
 
-exports.deleteChat = async (req, res) => {
+// exports.deleteChat = async (req, res) => {
+//   try {
+//     await Chat.destroy({
+//       where: {
+//         id: req.params.id,
+//       },
+//     });
+
+//     return res.json({
+//       status: "success",
+//       messages: "Chat destroyed successfully",
+//     });
+//   } catch (err) {
+//     res.end(JSON.stringify({ status: "error", message: e.message }));
+//   }
+// };
+
+exports.sendMessage = async (req, res) => {
+  const { sendMessage, chatId } = req.body;
+  const user = req.user;
+
   try {
-    await Chat.destroy({
-      where: {
-        id: req.params.id,
-      },
+    const message = await Message.create({
+      type: "text",
+      message: sendMessage,
+      chatId,
+      fromUserId: user.id,
     });
 
-    return res.json({
-      status: "success",
-      messages: "Chat destroyed successfully",
-    });
-  } catch (err) {
+    // res.json(message.get({ raw: true }));
+    res.json(message);
+  } catch (e) {
     res.end(JSON.stringify({ status: "error", message: e.message }));
   }
 };
