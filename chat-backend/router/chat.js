@@ -5,12 +5,15 @@ const {
   messages,
   deleteChat,
   sendMessage,
+  imageUpload,
 } = require("../controllers/chatController");
 const { auth: authMiddleware } = require("../middleware/auth");
+const { chatFile: chatMiddleware } = require("../middleware/fileUpload");
 
 router.get("/", [authMiddleware], chat);
 router.post("/create", [authMiddleware], create);
 router.post("/messages", [authMiddleware], messages);
+router.post("/upload-image", [authMiddleware, chatMiddleware], imageUpload);
 
 //TODO: remove after include socket; for testing insert a new message
 // router.post("/sendMessage", [authMiddleware], sendMessage);

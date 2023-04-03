@@ -31,7 +31,7 @@ exports.chat = async (req, res) => {
               },
             ],
             limit: 20,
-            order: [["id", "DESC"]],
+            order: [["id", "ASC"]],
           },
         ],
       },
@@ -175,6 +175,18 @@ exports.messages = async (req, res) => {
   };
 
   return res.json({ data: { ...result } });
+};
+
+exports.imageUpload = async (req, res) => {
+  console.log("uploading image", req.file);
+  if (req.file) {
+    return res.json({ url: req.file.filename });
+  }
+  res.status(500).json({ message: "No image uploaded" });
+  try {
+  } catch (e) {
+    res.end(JSON.stringify({ status: "error", message: e.message }));
+  }
 };
 
 exports.deleteChat = async (req, res) => {

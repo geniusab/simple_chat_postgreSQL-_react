@@ -7,6 +7,7 @@ import { Picker } from "emoji-mart";
 // import 'emoji-mart/css/emoji-mart.css'
 import "./MessageInput.scss";
 import { socketConnect } from "./../../hooks/socketConnect";
+import ChatService from "./../../../../services/chatService";
 
 const MessageInput = ({ chat }) => {
   const dispatch = useDispatch();
@@ -15,7 +16,7 @@ const MessageInput = ({ chat }) => {
   // const socket = useSelector(state => state.chatReducer.socket)
   // const newMessage = useSelector(state => state.chatReducer.newMessage)
 
-  // const fileUpload = useRef()
+  const fileUpload = useRef();
   // const msgInput = useRef()
 
   const [message, setMessage] = useState("");
@@ -65,23 +66,23 @@ const MessageInput = ({ chat }) => {
 
     setMessage("");
     setImage("");
-    //   setShowEmojiPicker(false)
+    // setShowEmojiPicker(false)
 
     // send message with socket
     socketConnect().emit("message", msg);
   };
 
-  // const handleImageUpload = () => {
-  //     const formData = new FormData()
-  //     formData.append('id', chat.id)
-  //     formData.append('image', image)
+  const handleImageUpload = () => {
+    const formData = new FormData();
+    formData.append("id", chat.id);
+    formData.append("image", image);
 
-  //     ChatService.uploadImage(formData)
-  //         .then(image => {
-  //             sendMessage(image)
-  //         })
-  //         .catch(err => console.log(err))
-  // }
+    ChatService.uploadImage(formData)
+      .then((image) => {
+        sendMessage(image);
+      })
+      .catch((err) => console.log(err));
+  };
 
   // const selectEmoji = (emoji) => {
   //     const startPosition = msgInput.current.selectionStart
@@ -126,25 +127,23 @@ const MessageInput = ({ chat }) => {
         </div>
 
         <div id="image-upload">
-          {/* {
-                        image.name ?
-                            <div id='image-details'>
-                                <p className='m-0'>{image.name}</p>
-                                <FontAwesomeIcon
-                                    onClick={handleImageUpload}
-                                    icon='upload'
-                                    className='fa-icon'
-                                />
-                                <FontAwesomeIcon
-                                    onClick={() => setImage('')}
-                                    icon='times'
-                                    className='fa-icon'
-                                />
-                            </div>
-                            : null
-                    } */}
+          {image.name ? (
+            <div id="image-details">
+              <p className="m-0">{image.name}</p>
+              <FontAwesomeIcon
+                onClick={handleImageUpload}
+                icon="upload"
+                className="fa-icon"
+              />
+              <FontAwesomeIcon
+                onClick={() => setImage("")}
+                icon="times"
+                className="fa-icon"
+              />
+            </div>
+          ) : null}
           <FontAwesomeIcon
-            // onClick={() => fileUpload.current.click()}
+            onClick={() => fileUpload.current.click()}
             icon={["far", "image"]}
             className="fa-icon"
           />
@@ -169,8 +168,8 @@ const MessageInput = ({ chat }) => {
       <input
         id="chat-image"
         type="file"
-        //   ref={fileUpload}
-        //   onChange={(e) => setImage(e.target.files[0])}
+        ref={fileUpload}
+        onChange={(e) => setImage(e.target.files[0])}
       />
 
       {/* {showEmojiPicker ? (
