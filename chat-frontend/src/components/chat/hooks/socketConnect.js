@@ -7,20 +7,22 @@ import {
   setFriendOnline,
   setSocket,
   receivedMessage,
+  senderTyping,
 } from "./../../../features/chat/chatSlice";
 
-export const socketConnect = () => {
+export const socket = (() => {
   return socketIOClient.connect("http://localhost:3001");
-};
+})();
 
 function useSocket(user, dispatch) {
   useEffect(() => {
-    const socket = socketIOClient.connect("http://localhost:3001"); //socketConnect();
+    // const socket = socketIOClient.connect("http://localhost:3001"); //socketConnect();
     // dispatch(setSocket(socket));
     socket.emit("join", user);
 
-    socket.on("typing", (user) => {
-      console.log("Event: ", user);
+    socket.on("typing", (sender) => {
+      console.log("Event: ", sender);
+      dispatch(senderTyping(sender));
     });
 
     socket.on("friends", (friends) => {

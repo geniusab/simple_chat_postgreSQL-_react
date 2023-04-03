@@ -121,6 +121,17 @@ const SocketServer = (server) => {
         });
       } catch (e) {}
     });
+
+    socket.on("typing", async (message) => {
+      message.toUserId.forEach((id) => {
+        if (users.has(id)) {
+          // io.to(socket).emit("typing", message);
+          users.get(id).sockets.forEach((socket) => {
+            io.to(socket).emit("typing", message);
+          });
+        }
+      });
+    });
   });
 };
 

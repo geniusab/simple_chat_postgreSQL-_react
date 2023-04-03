@@ -10,7 +10,7 @@ const MessageBox = ({ chat }) => {
 
   const user = useSelector((state) => state.auth.userInfo);
   const scrollBottom = useSelector((state) => state.chat.scrollBottom);
-  // const senderTyping = useSelector(state => state.chatReducer.senderTyping)
+  const senderTyping = useSelector((state) => state.chat.senderTyping);
   // const [loading, setLoading] = useState(false)
   // const [scrollUp, setScrollUp] = useState(0)
 
@@ -84,15 +84,16 @@ const MessageBox = ({ chat }) => {
           />
         );
       })}
-      {/* {
-                senderTyping.typing && senderTyping.chatId === chat.id
-                    ? <div className='message mt-5p'>
-                        <div className='other-person'>
-                            <p className='m-0'>{senderTyping.fromUser.firstName} {senderTyping.fromUser.lastName}...</p>
-                        </div>
-                    </div>
-                    : null
-            } */}
+      {senderTyping.typing && senderTyping.chatId === chat.id ? (
+        <div className="message mt-5p">
+          <div className="other-person">
+            <p className="m-0">
+              {senderTyping.fromUser.firstName} {senderTyping.fromUser.lastName}
+              ...
+            </p>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 };

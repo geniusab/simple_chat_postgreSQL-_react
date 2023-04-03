@@ -6,7 +6,7 @@ import { Picker } from "emoji-mart";
 // import { incrementScroll } from '../../../../store/actions/chat'
 // import 'emoji-mart/css/emoji-mart.css'
 import "./MessageInput.scss";
-import { socketConnect } from "./../../hooks/socketConnect";
+import { socket } from "./../../hooks/socketConnect";
 import ChatService from "./../../../../services/chatService";
 
 const MessageInput = ({ chat }) => {
@@ -30,23 +30,20 @@ const MessageInput = ({ chat }) => {
     const value = e.target.value;
     setMessage(value);
 
-    //   const receiver = {
-    //       chatId: chat.id,
-    //       fromUser: user,
-    //       toUserId: chat.Users.map(user => user.id)
-    //   }
-
-    //   if (value.length === 1) {
-    //       receiver.typing = true
-    //       socket.emit('typing', receiver)
-    //   }
-
-    //   if (value.length === 0) {
-    //       receiver.typing = false
-    //       socket.emit('typing', receiver)
-    //   }
-
     // notify other users that this user is typing something
+    const receiver = {
+      chatId: chat.id,
+      fromUser: user,
+      toUserId: chat.Users.map((user) => user.id),
+    };
+    if (value.length === 1) {
+      receiver.typing = true;
+      socket.emit("typing", receiver);
+    }
+    if (value.length === 0) {
+      receiver.typing = false;
+      socket.emit("typing", receiver);
+    }
   };
 
   const handleKeyDown = (e, imageUpload) => {
@@ -69,7 +66,7 @@ const MessageInput = ({ chat }) => {
     // setShowEmojiPicker(false)
 
     // send message with socket
-    socketConnect().emit("message", msg);
+    socket.emit("message", msg);
   };
 
   const handleImageUpload = () => {

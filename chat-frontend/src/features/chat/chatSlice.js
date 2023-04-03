@@ -8,6 +8,9 @@ const initialState = {
   error: null,
   newMessage: { chatId: null, seen: null },
   scrollBottom: 0,
+  senderTyping: {
+    typing: false,
+  },
 };
 
 export const chatSlice = createSlice({
@@ -145,7 +148,7 @@ export const chatSlice = createSlice({
           chats: chatsCopy,
           currentChat: currentChatCopy,
           newMessage,
-          // senderTyping: { typing: false },
+          senderTyping: { typing: false },
         };
       }
 
@@ -157,6 +160,9 @@ export const chatSlice = createSlice({
         scrollBottom,
         senderTyping: { typing: false },
       };
+    },
+    senderTyping: (state, { payload }) => {
+      state.senderTyping = payload;
     },
   },
   // receivedMessage: (state, { payload }) => {
@@ -219,6 +225,7 @@ export const {
   setFriendOffline,
   setSocket,
   receivedMessage,
+  senderTyping,
 } = chatSlice.actions;
 
 export const selectChat = (state) => state.chat.chats;
