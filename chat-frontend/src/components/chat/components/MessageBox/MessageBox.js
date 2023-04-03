@@ -9,16 +9,16 @@ const MessageBox = ({ chat }) => {
   // const dispatch = useDispatch()
 
   const user = useSelector((state) => state.auth.userInfo);
-  // const scrollBottom = useSelector(state => state.chatReducer.scrollBottom)
+  const scrollBottom = useSelector((state) => state.chat.scrollBottom);
   // const senderTyping = useSelector(state => state.chatReducer.senderTyping)
   // const [loading, setLoading] = useState(false)
   // const [scrollUp, setScrollUp] = useState(0)
 
-  // const msgBox = useRef()
+  const msgBox = useRef();
 
-  // const scrollManual = (value) => {
-  //     msgBox.current.scrollTop = value
-  // }
+  const scrollManual = (value) => {
+    msgBox.current.scrollTop = value;
+  };
 
   // const handleInfiniteScroll = (e) => {
   //     if (e.target.scrollTop === 0) {
@@ -53,16 +53,21 @@ const MessageBox = ({ chat }) => {
   //     }
   // }, [senderTyping])
 
-  // useEffect(() => {
-  //     if (!senderTyping.typing) {
-  //         setTimeout(() => {
-  //             scrollManual(msgBox.current.scrollHeight)
-  //         }, 100)
-  //     }
-  // }, [scrollBottom])
+  useEffect(() => {
+    // if (!senderTyping.typing) {
+    //     setTimeout(() => {
+    //         scrollManual(msgBox.current.scrollHeight)
+    //     }, 100)
+    // }
+    // setTimeout(() => {
+
+    // }, 100);
+    scrollManual(msgBox.current.scrollHeight);
+    console.log(scrollBottom);
+  }, [scrollBottom]);
 
   return (
-    <div id="msg-box" /*onScroll={handleInfiniteScroll}  ref={msgBox} */>
+    <div id="msg-box" ref={msgBox} /*onScroll={handleInfiniteScroll}  */>
       {/* {
                 loading
                     ? <p className='loader m-0'><FontAwesomeIcon icon='spinner' className='fa-spin' /></p>

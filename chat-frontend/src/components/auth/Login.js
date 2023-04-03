@@ -21,7 +21,7 @@ const Login = () => {
 
   const submitForm = async (e) => {
     e.preventDefault();
-    console.log("submitForm", { email, password });
+
     // const user = await AuthService.login({ email, password });
     // dispatch(login(user));
 

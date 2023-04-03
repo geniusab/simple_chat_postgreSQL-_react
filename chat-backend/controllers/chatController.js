@@ -190,7 +190,7 @@ exports.deleteChat = async (req, res) => {
       messages: "Chat destroyed successfully",
     });
   } catch (err) {
-    res.end(JSON.stringify({ status: "error", message: e.message }));
+    res.end(JSON.stringify({ status: "error", message: err.message }));
   }
 };
 
@@ -206,7 +206,6 @@ exports.sendMessage = async (req, res) => {
       fromUserId: user.id,
     });
 
-    // res.json(message.get({ raw: true }));
     res.json(message);
   } catch (e) {
     res.end(JSON.stringify({ status: "error", message: e.message }));

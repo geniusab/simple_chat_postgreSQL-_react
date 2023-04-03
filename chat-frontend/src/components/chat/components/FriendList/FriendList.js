@@ -47,7 +47,7 @@ const FriendList = () => {
       <hr />
 
       <div id="friends-box">
-        {chats.length > 0 ? (
+        {chats && chats?.length > 0 ? (
           chats.map((chat, index) => {
             return (
               <Friend click={() => openChat(chat)} chat={chat} key={chat.id} />

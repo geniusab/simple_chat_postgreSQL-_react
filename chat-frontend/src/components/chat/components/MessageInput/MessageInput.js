@@ -6,9 +6,11 @@ import { Picker } from "emoji-mart";
 // import { incrementScroll } from '../../../../store/actions/chat'
 // import 'emoji-mart/css/emoji-mart.css'
 import "./MessageInput.scss";
+import { socketConnect } from "./../../hooks/socketConnect";
 
 const MessageInput = ({ chat }) => {
-  // const dispatch = useDispatch()
+  const dispatch = useDispatch();
+  // const socket = JSON.parse(useSelector((state) => state.chats.socket));
   // const user = useSelector(state => state.authReducer.user)
   // const socket = useSelector(state => state.chatReducer.socket)
   // const newMessage = useSelector(state => state.chatReducer.newMessage)
@@ -66,7 +68,7 @@ const MessageInput = ({ chat }) => {
     //   setShowEmojiPicker(false)
 
     // send message with socket
-    //   socket.emit('message', msg)
+    socketConnect().emit("message", msg);
   };
 
   // const handleImageUpload = () => {
