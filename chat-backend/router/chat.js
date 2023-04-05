@@ -6,6 +6,7 @@ const {
   deleteChat,
   sendMessage,
   imageUpload,
+  addUserToGroup,
 } = require("../controllers/chatController");
 const { auth: authMiddleware } = require("../middleware/auth");
 const { chatFile: chatMiddleware } = require("../middleware/fileUpload");
@@ -19,5 +20,7 @@ router.post("/upload-image", [authMiddleware, chatMiddleware], imageUpload);
 //TODO: remove after include socket; for testing insert a new message
 // router.post("/sendMessage", [authMiddleware], sendMessage);
 router.post("/:id", [authMiddleware], deleteChat);
+
+router.post("/add-user-to-group", [authMiddleware], addUserToGroup);
 
 module.exports = router;

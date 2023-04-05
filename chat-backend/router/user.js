@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const { update } = require("../controllers/userController");
+const { update, search } = require("../controllers/userController");
 const { auth: authMiddleware } = require("../middleware/auth");
 const { validate } = require("../validators");
 const { rules: updateRules } = require("../validators/user/update");
@@ -10,5 +10,7 @@ router.post(
   [authMiddleware, userFile, updateRules, validate],
   update
 );
+
+router.get("/search-users", authMiddleware, search);
 
 module.exports = router;
