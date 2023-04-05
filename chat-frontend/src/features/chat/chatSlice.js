@@ -164,28 +164,10 @@ export const chatSlice = createSlice({
     senderTyping: (state, { payload }) => {
       state.senderTyping = payload;
     },
-    // paginateMessages: (state, { payload }) => {
-    //   const { messages, id, pagination } = payload;
-    //   console.log(`pagination: ${{ messages, id, pagination }})}`);
-    //   // state.chats = state.chats.map((chat, index) => {
-    //   //   if (chat.id === id) {
-    //   //     return {
-    //   //       ...chat,
-    //   //       Messages: {
-    //   //         ...chat.Messages,
-    //   //         ...messages,
-    //   //         Pagination: pagination,
-    //   //       },
-    //   //     };
-    //   //   }
-    //   //   return chat;
-    //   // });
-    //   // state.currentChat.Messages = {
-    //   //   ...state.currentChat,
-    //   //   Messages: [...state.currentChat.Messages, ...messages],
-    //   //   Pagination: pagination,
-    //   // };
-    // },
+    incrementScroll: (state, { payload }) => {
+      state.scrollBottom += 1;
+      state.newMessage = { chatId: null, seen: true };
+    },
   },
 
   extraReducers: {
@@ -202,9 +184,6 @@ export const chatSlice = createSlice({
       state.chats = [];
     },
 
-    // [paginateMessagesAsync.pending]: (state) => {
-    //   console.log("paginateMessagesAsync pending");
-    // },
     [paginateMessagesAsync.fulfilled]: (state, { payload }) => {
       const { messages, pagination } = payload.data;
       const chatId = messages[0]?.chatId;
@@ -238,6 +217,7 @@ export const {
   setSocket,
   receivedMessage,
   senderTyping,
+  incrementScroll,
 } = chatSlice.actions;
 
 export const selectChat = (state) => state.chat.chats;

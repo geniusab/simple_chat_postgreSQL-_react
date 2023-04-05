@@ -1,24 +1,19 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-// import ChatService from '../../../../services/chatService'
-
-// import { Picker } from "emoji-mart";
-// import { incrementScroll } from '../../../../store/actions/chat'
-// import "emoji-mart/css/emoji-mart.css";
-import "./MessageInput.scss";
-import { socket } from "./../../hooks/socketConnect";
-import ChatService from "./../../../../services/chatService";
-
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
+import { socket } from "./../../hooks/socketConnect";
+import ChatService from "./../../../../services/chatService";
+import { incrementScroll } from "./../../../../features/chat/chatSlice";
+
+import "./MessageInput.scss";
 
 const MessageInput = ({ chat }) => {
   const dispatch = useDispatch();
 
-  // const user = useSelector(state => state.authReducer.user)
-  // const socket = useSelector(state => state.chatReducer.socket)
-  // const newMessage = useSelector(state => state.chatReducer.newMessage)
+  const user = useSelector((state) => state.auth.userInfo);
+  const newMessage = useSelector((state) => state.chat.newMessage);
 
   const fileUpload = useRef();
   const msgInput = useRef();
@@ -26,9 +21,8 @@ const MessageInput = ({ chat }) => {
   const [message, setMessage] = useState("");
   const [image, setImage] = useState("");
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-  // const [showNewMessageNotification, setShowNewMessageNotification] = useState(false)
-
-  const user = useSelector((state) => state.auth.userInfo);
+  const [showNewMessageNotification, setShowNewMessageNotification] =
+    useState(false);
 
   const handleMessage = (e) => {
     const value = e.target.value;
@@ -100,36 +94,39 @@ const MessageInput = ({ chat }) => {
     msgInput.current.selectionEnd = endPosition + emojiLength;
   };
 
-  // useEffect(() => {
-  //     const msgBox = document.getElementById('msg-box')
-  //     if (!newMessage.seen && newMessage.chatId === chat.id && msgBox.scrollHeight !== msgBox.clientHeight) {
-  //         if (msgBox.scrollTop > msgBox.scrollHeight * 0.30) {
-  //             dispatch(incrementScroll())
-  //         } else {
-  //             setShowNewMessageNotification(true)
-  //         }
-  //     } else {
-  //         setShowNewMessageNotification(false)
-  //     }
-  // }, [newMessage, dispatch])
+  //
+  useEffect(() => {
+    const msgBox = document.getElementById("msg-box");
+    if (
+      !newMessage.seen &&
+      newMessage.chatId === chat.id &&
+      msgBox.scrollHeight !== msgBox.clientHeight
+    ) {
+      if (msgBox.scrollTop > msgBox.scrollHeight * 0.3) {
+        dispatch(incrementScroll());
+      } else {
+        setShowNewMessageNotification(true);
+      }
+    } else {
+      setShowNewMessageNotification(false);
+    }
+  }, [newMessage, dispatch]);
 
-  // const showNewMessage = () => {
-  //     dispatch(incrementScroll())
-  //     setShowNewMessageNotification(false)
-  // }
+  const showNewMessage = () => {
+    dispatch(incrementScroll());
+    setShowNewMessageNotification(false);
+  };
 
   return (
     <div id="input-container">
       <div id="image-upload-container">
         <div>
-          {/* {
-                        showNewMessageNotification
-                            ? <div id='message-notification' onClick={showNewMessage}>
-                                <FontAwesomeIcon icon='bell' className='fa-icon' />
-                                <p className='m-0'>new message</p>
-                            </div>
-                            : null
-                    } */}
+          {showNewMessageNotification ? (
+            <div id="message-notification" onClick={showNewMessage}>
+              <FontAwesomeIcon icon="bell" className="fa-icon" />
+              <p className="m-0">new message</p>
+            </div>
+          ) : null}
         </div>
 
         <div id="image-upload">
@@ -184,7 +181,6 @@ const MessageInput = ({ chat }) => {
           title="Pick your emoji..."
           emoji="point_up"
           style={{ position: "absolute", bottom: "20px", right: "20px" }}
-          // onSelect={selectEmoji}
           onEmojiSelect={selectEmoji}
         />
       ) : null}
