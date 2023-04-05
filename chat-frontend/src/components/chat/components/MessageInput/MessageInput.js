@@ -2,26 +2,30 @@ import React, { useState, useRef, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 // import ChatService from '../../../../services/chatService'
-import { Picker } from "emoji-mart";
+
+// import { Picker } from "emoji-mart";
 // import { incrementScroll } from '../../../../store/actions/chat'
-// import 'emoji-mart/css/emoji-mart.css'
+// import "emoji-mart/css/emoji-mart.css";
 import "./MessageInput.scss";
 import { socket } from "./../../hooks/socketConnect";
 import ChatService from "./../../../../services/chatService";
 
+import data from "@emoji-mart/data";
+import Picker from "@emoji-mart/react";
+
 const MessageInput = ({ chat }) => {
   const dispatch = useDispatch();
-  // const socket = JSON.parse(useSelector((state) => state.chats.socket));
+
   // const user = useSelector(state => state.authReducer.user)
   // const socket = useSelector(state => state.chatReducer.socket)
   // const newMessage = useSelector(state => state.chatReducer.newMessage)
 
   const fileUpload = useRef();
-  // const msgInput = useRef()
+  const msgInput = useRef();
 
   const [message, setMessage] = useState("");
   const [image, setImage] = useState("");
-  // const [showEmojiPicker, setShowEmojiPicker] = useState(false)
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   // const [showNewMessageNotification, setShowNewMessageNotification] = useState(false)
 
   const user = useSelector((state) => state.auth.userInfo);
@@ -63,7 +67,7 @@ const MessageInput = ({ chat }) => {
 
     setMessage("");
     setImage("");
-    // setShowEmojiPicker(false)
+    setShowEmojiPicker(false);
 
     // send message with socket
     socket.emit("message", msg);
@@ -81,15 +85,20 @@ const MessageInput = ({ chat }) => {
       .catch((err) => console.log(err));
   };
 
-  // const selectEmoji = (emoji) => {
-  //     const startPosition = msgInput.current.selectionStart
-  //     const endPosition = msgInput.current.selectionEnd
-  //     const emojiLength = emoji.native.length
-  //     const value = msgInput.current.value
-  //     setMessage(value.substring(0, startPosition) + emoji.native + value.substring(endPosition, value.length))
-  //     msgInput.current.focus()
-  //     msgInput.current.selectionEnd = endPosition + emojiLength
-  // }
+  const selectEmoji = (emoji) => {
+    const startPosition = msgInput.current.selectionStart;
+    const endPosition = msgInput.current.selectionEnd;
+    const emojiLength = emoji.native.length;
+    const value = msgInput.current.value;
+
+    setMessage(
+      value.substring(0, startPosition) +
+        emoji.native +
+        value.substring(endPosition, value.length)
+    );
+    msgInput.current.focus();
+    msgInput.current.selectionEnd = endPosition + emojiLength;
+  };
 
   // useEffect(() => {
   //     const msgBox = document.getElementById('msg-box')
@@ -148,7 +157,7 @@ const MessageInput = ({ chat }) => {
       </div>
       <div id="message-input">
         <input
-          // ref={msgInput}
+          ref={msgInput}
           value={message}
           type="text"
           placeholder="Message..."
@@ -156,7 +165,7 @@ const MessageInput = ({ chat }) => {
           onKeyDown={(e) => handleKeyDown(e, false)}
         />
         <FontAwesomeIcon
-          // onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+          onClick={() => setShowEmojiPicker(!showEmojiPicker)}
           icon={["far", "smile"]}
           className="fa-icon"
         />
@@ -169,14 +178,16 @@ const MessageInput = ({ chat }) => {
         onChange={(e) => setImage(e.target.files[0])}
       />
 
-      {/* {showEmojiPicker ? (
-          <Picker
-            title="Pick your emoji..."
-            emoji="point_up"
-            style={{ position: "absolute", bottom: "20px", right: "20px" }}
-            onSelect={selectEmoji}
-          />
-        ) : null} */}
+      {showEmojiPicker ? (
+        <Picker
+          data={data}
+          title="Pick your emoji..."
+          emoji="point_up"
+          style={{ position: "absolute", bottom: "20px", right: "20px" }}
+          // onSelect={selectEmoji}
+          onEmojiSelect={selectEmoji}
+        />
+      ) : null}
     </div>
   );
 };

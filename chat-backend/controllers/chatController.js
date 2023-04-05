@@ -1,16 +1,18 @@
 const { Op } = require("sequelize");
 const config = require("../config/app");
-const User = require("../models").User;
-const Chat = require("../models").Chat;
-const ChatUser = require("../models").ChatUser;
-const Message = require("../models").Message;
+const models = require("../models");
 const { sequelize } = require("../models");
+const User = models.User;
+const Chat = models.Chat;
+const ChatUser = models.ChatUser;
+const Message = models.Message;
 
 exports.chat = async (req, res) => {
   const user = await User.findOne({
     where: {
       id: req.user.id,
     },
+
     include: [
       {
         model: Chat,
@@ -25,20 +27,21 @@ exports.chat = async (req, res) => {
           },
           {
             model: Message,
+
+            limit: 20,
             include: [
               {
                 model: User,
+                order: [[(Message, "id", "DESC")]],
               },
             ],
-            limit: 20,
-            order: [["id", "ASC"]],
           },
         ],
       },
     ],
   });
 
-  return res.send(user.Chats);
+  return res.json(user.Chats);
 };
 
 exports.create = async (req, res) => {
@@ -147,17 +150,25 @@ exports.create = async (req, res) => {
 };
 
 exports.messages = async (req, res) => {
-  const limit = 10;
+  const limit = 20;
   const page = req.query.page || 1;
 
   const offset = page > 1 ? page * limit : 0;
 
+  const size = await Message.count();
   const messages = await Message.findAndCountAll({
     where: {
       chatId: req.query.id,
     },
+
+    include: [
+      {
+        model: User,
+      },
+    ],
     limit,
     offset,
+    order: [["id", "DESC"]],
   });
 
   const totalPages = Math.ceil(messages.count / limit);
@@ -171,6 +182,7 @@ exports.messages = async (req, res) => {
     pagination: {
       page,
       totalPages,
+      total: size,
     },
   };
 

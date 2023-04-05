@@ -12,7 +12,8 @@ const { chatFile: chatMiddleware } = require("../middleware/fileUpload");
 
 router.get("/", [authMiddleware], chat);
 router.post("/create", [authMiddleware], create);
-router.post("/messages", [authMiddleware], messages);
+// router.post("/messages", [authMiddleware], messages);
+router.get("/messages", messages);
 router.post("/upload-image", [authMiddleware, chatMiddleware], imageUpload);
 
 //TODO: remove after include socket; for testing insert a new message

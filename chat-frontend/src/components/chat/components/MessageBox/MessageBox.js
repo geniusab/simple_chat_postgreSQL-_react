@@ -2,17 +2,17 @@ import React, { useEffect, useRef, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import Message from "../Message/Message";
 // import { paginateMessages } from '../../../../store/actions/chat'
+import { paginateMessagesAsync } from "./../../../../features/chat/chatThunk";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import "./MessageBox.scss";
-
 const MessageBox = ({ chat }) => {
-  // const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
   const user = useSelector((state) => state.auth.userInfo);
   const scrollBottom = useSelector((state) => state.chat.scrollBottom);
   const senderTyping = useSelector((state) => state.chat.senderTyping);
-  // const [loading, setLoading] = useState(false)
-  // const [scrollUp, setScrollUp] = useState(0)
+  const [loading, setLoading] = useState(false);
+  const [scrollUp, setScrollUp] = useState(0);
 
   const msgBox = useRef();
 
@@ -20,30 +20,36 @@ const MessageBox = ({ chat }) => {
     msgBox.current.scrollTop = value;
   };
 
-  // const handleInfiniteScroll = (e) => {
-  //     if (e.target.scrollTop === 0) {
+  const handleInfiniteScroll = (e) => {
+    console.log("Scroll");
+    // scroll top
 
-  //         setLoading(true)
-  //         const pagination = chat.Pagination
-  //         const page = typeof pagination === 'undefined' ? 1 : pagination.page
+    if (e.target.scrollTop === 0) {
+      const pagination = chat.Pagination;
+      const page = typeof pagination === "undefined" ? 1 : pagination.page;
+      if (pagination?.totalPages === +pagination?.page) {
+        return;
+      }
+      setLoading(true);
 
-  //         dispatch(paginateMessages(chat.id, parseInt(page) + 1))
-  //             .then(res => {
-  //                 if (res) {
-  //                     setScrollUp(scrollUp + 1)
-  //                 }
-  //                 setLoading(false)
-  //             }).catch(err => {
-  //                 setLoading(false)
-  //             })
-  //     }
-  // }
+      dispatch(paginateMessagesAsync({ id: chat.id, page: parseInt(page) + 1 }))
+        .then((res) => {
+          if (res) {
+            setScrollUp(scrollUp + 1);
+          }
+          setLoading(false);
+        })
+        .catch((err) => {
+          setLoading(false);
+        });
+    }
+  };
 
-  // useEffect(() => {
-  //     setTimeout(() => {
-  //         scrollManual(Math.ceil(msgBox.current.scrollHeight * 0.10))
-  //     }, 100)
-  // }, [scrollUp])
+  useEffect(() => {
+    setTimeout(() => {
+      scrollManual(Math.ceil(msgBox.current.scrollHeight * 0.1));
+    }, 100);
+  }, [scrollUp]);
 
   // useEffect(() => {
   //     if (senderTyping.typing && msgBox.current.scrollTop > msgBox.current.scrollHeight * 0.30) {
@@ -63,16 +69,15 @@ const MessageBox = ({ chat }) => {
 
     // }, 100);
     scrollManual(msgBox.current.scrollHeight);
-    console.log(scrollBottom);
   }, [scrollBottom]);
 
   return (
-    <div id="msg-box" ref={msgBox} /*onScroll={handleInfiniteScroll}  */>
-      {/* {
-                loading
-                    ? <p className='loader m-0'><FontAwesomeIcon icon='spinner' className='fa-spin' /></p>
-                    : null
-            } */}
+    <div id="msg-box" ref={msgBox} onScroll={handleInfiniteScroll}>
+      {loading ? (
+        <p className="loader m-0">
+          <FontAwesomeIcon icon="spinner" className="fa-spin" />
+        </p>
+      ) : null}
       {chat.Messages.map((message, index) => {
         return (
           <Message

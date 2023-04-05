@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { chatAsync } from "./chatThunk";
+import { chatAsync, paginateMessagesAsync } from "./chatThunk";
 
 const initialState = {
   loading: false,
@@ -164,44 +164,30 @@ export const chatSlice = createSlice({
     senderTyping: (state, { payload }) => {
       state.senderTyping = payload;
     },
+    // paginateMessages: (state, { payload }) => {
+    //   const { messages, id, pagination } = payload;
+    //   console.log(`pagination: ${{ messages, id, pagination }})}`);
+    //   // state.chats = state.chats.map((chat, index) => {
+    //   //   if (chat.id === id) {
+    //   //     return {
+    //   //       ...chat,
+    //   //       Messages: {
+    //   //         ...chat.Messages,
+    //   //         ...messages,
+    //   //         Pagination: pagination,
+    //   //       },
+    //   //     };
+    //   //   }
+    //   //   return chat;
+    //   // });
+    //   // state.currentChat.Messages = {
+    //   //   ...state.currentChat,
+    //   //   Messages: [...state.currentChat.Messages, ...messages],
+    //   //   Pagination: pagination,
+    //   // };
+    // },
   },
-  // receivedMessage: (state, { payload }) => {
-  //   console.log("receivedMessage", payload);
-  //   const msg = {
-  //     id: state.currentChat.Messages.length + 1,
-  //     message: payload.message,
-  //     type: payload.type,
-  //     chatId: payload.chatId,
-  //     fromUserId: payload.toUserId[0],
-  //     User: payload.fromUser,
-  //   };
-  //   // state.currentChat.Messages.push(msg);
 
-  //   state.chats = state.chats.map((chat) => {
-  //     if (payload.chatId === chat.chatId) {
-  //       if (payload.User.id === payload.userId) {
-  //         state.scrollBottom++; //
-  //       } else {
-  //         state.newMessage = {
-  //           chatId: chat.chatId,
-  //           seen: false,
-  //         };
-  //       }
-
-  //       if (payload.message.chatId === state.currentChat.id) {
-  //         state.currentChat = {
-  //           ...state.currentChat,
-  //           Messages: [...state.currentChat.messages, ...[payload.message]],
-  //         };
-  //       }
-  //       return {
-  //         ...chat,
-  //         Messages: [...state.messages, ...[payload.message]],
-  //       };
-  //     }
-  //     return chat;
-  //   });
-  // },
   extraReducers: {
     [chatAsync.pending]: (state) => {
       state.loading = true;
@@ -214,6 +200,32 @@ export const chatSlice = createSlice({
     [chatAsync.rejected]: (state, { payload }) => {
       state.loading = false;
       state.chats = [];
+    },
+
+    // [paginateMessagesAsync.pending]: (state) => {
+    //   console.log("paginateMessagesAsync pending");
+    // },
+    [paginateMessagesAsync.fulfilled]: (state, { payload }) => {
+      const { messages, pagination } = payload.data;
+      const chatId = messages[0]?.chatId;
+
+      state.chats = state.chats.map((chat, index) => {
+        if (chat.id === chatId) {
+          return {
+            ...chat,
+            Messages: [...chat.Messages, ...messages],
+            Pagination: pagination,
+          };
+        }
+        return chat;
+      });
+      if (Object.keys(state.currentChat).length) {
+        state.currentChat = {
+          ...state.currentChat,
+          Messages: [...messages, ...state.currentChat.Messages],
+          Pagination: pagination,
+        };
+      }
     },
   },
 });
